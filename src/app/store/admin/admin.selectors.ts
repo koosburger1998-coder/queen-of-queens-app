@@ -1,0 +1,24 @@
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { AdminState } from './admin.state';
+
+export const selectAdminFeature = createFeatureSelector<AdminState>('admin');
+export const selectAdminLoaded = createSelector(selectAdminFeature, (s) => s.loaded);
+export const selectAdminLoading = createSelector(selectAdminFeature, (s) => s.loading);
+export const selectAdminSaving = createSelector(selectAdminFeature, (s) => s.saving);
+export const selectAdminError = createSelector(selectAdminFeature, (s) => s.error);
+export const selectActiveEvent = createSelector(selectAdminFeature, (s) => s.activeEvent);
+export const selectAdminEvents = createSelector(selectAdminFeature, (s) => s.events);
+export const selectCompetitionEvents = createSelector(selectAdminFeature, (s) => s.competitionEvents);
+export const selectCompetition = createSelector(selectAdminFeature, (s) => s.competition);
+export const selectAdminContestants = createSelector(selectAdminFeature, (s) => s.contestants);
+export const selectAllContestants = createSelector(selectAdminFeature, (s) => s.allContestants);
+export const selectAdminJudges = createSelector(selectAdminFeature, (s) => s.judges);
+export const selectAllJudges = createSelector(selectAdminFeature, (s) => s.allJudges);
+export const selectAdminCategories = createSelector(selectAdminFeature, (s) => s.categories);
+export const selectAdminGuestCategories = createSelector(selectAdminFeature, (s) => s.guestCategories);
+export const selectAdminScores = createSelector(selectAdminFeature, (s) => s.scores);
+export const selectGuestSummary = createSelector(selectAdminFeature, (s) => s.guestSummary);
+export const selectLeaderboard = createSelector(selectAdminFeature, (s) => s.leaderboard);
+export const selectMissingVotes = createSelector(selectAdminFeature, (s) => s.missingVotes);
+export const selectAdminSettings = createSelector(selectAdminFeature, (s) => s.settings);
+export const selectAdminState = selectAdminFeature;

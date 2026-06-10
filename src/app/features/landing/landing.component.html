@@ -1,0 +1,51 @@
+<app-navbar></app-navbar>
+<div class="landing-page">
+  <div class="landing-bg"></div>
+  <div class="landing-stars"></div>
+
+  <main class="landing-shell">
+    <header class="landing-hero">
+      <img class="landing-hero__logo" src="assets/logo.svg" alt="Queen of Queens" />
+      <h1 class="landing-hero__title">QUEEN<br>OF QUEENS</h1>
+      <p class="landing-hero__sub">SLAYER OF THE STAGE</p>
+    </header>
+
+    <section class="landing-event-card" *ngIf="event; else loadingTpl">
+      <div class="landing-event-card__badge">
+        <span class="qq-badge qq-badge--gold">{{ event.stage || 'Live Event' }}</span>
+        <span class="qq-badge qq-badge--green" *ngIf="!event.scoringLocked">Scoring Open</span>
+        <span class="qq-badge qq-badge--red" *ngIf="event.scoringLocked">Scoring Locked</span>
+      </div>
+      <h2 class="landing-event-card__name">{{ event.name }}</h2>
+      <p class="landing-event-card__meta">
+        <mat-icon>calendar_today</mat-icon> {{ event.date | qqDate }}
+        <span *ngIf="event.venue">&nbsp;&bull;&nbsp;<mat-icon>location_on</mat-icon> {{ event.venue }}</span>
+      </p>
+      <p class="landing-event-card__desc" *ngIf="event.description">{{ event.description }}</p>
+    </section>
+
+    <ng-template #loadingTpl>
+      <app-spinner [diameter]="40" label="Loading event info…"></app-spinner>
+    </ng-template>
+
+    <div class="landing-actions">
+      <a routerLink="/judge" class="landing-action-card landing-action-card--judge">
+        <mat-icon class="landing-action-card__icon">how_to_vote</mat-icon>
+        <h3 class="landing-action-card__title">Judge Login</h3>
+        <p class="landing-action-card__sub">Score contestants with your judge code</p>
+      </a>
+
+      <a routerLink="/audience" class="landing-action-card landing-action-card--audience">
+        <mat-icon class="landing-action-card__icon">people</mat-icon>
+        <h3 class="landing-action-card__title">Audience Vote</h3>
+        <p class="landing-action-card__sub">Vote for your favourites</p>
+      </a>
+
+      <a routerLink="/admin" class="landing-action-card landing-action-card--admin">
+        <mat-icon class="landing-action-card__icon">admin_panel_settings</mat-icon>
+        <h3 class="landing-action-card__title">Admin</h3>
+        <p class="landing-action-card__sub">Manage events and results</p>
+      </a>
+    </div>
+  </main>
+</div>

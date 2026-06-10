@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AppSettings {
+  id        Int    @id @default(1)
+  adminCode String @default("ADMIN2026")
+}
+
+model Competition {
+  id                 Int    @id @default(autoincrement())
+  name               String @default("Queen of Queens")
+  title              String @default("QUEEN OF QUEENS — SLAYER OF THE STAGE!")
+  totalContestants   Int    @default(28)
+  heats              Int    @default(7)
+  contestantsPerHeat Int    @default(4)
+  songsPerContestant Int    @default(3)
+}
+
+model Event {
+  id                 String   @id @default(cuid())
+  name               String
+  date               String
+  venue              String   @default("")
+  scoringLocked      Boolean  @default(false)
+  guestVotingLocked  Boolean  @default(false)
+  isActive           Boolean  @default(false)
+  roundKey           String?
+  roundType          String?
+  stage              String?
+  expectedContestants Int     @default(0)
+  songCount          Int      @default(3)
+  advanceCount       Int      @default(0)
+  description        String   @default("")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  contestants EventContestant[]
+  judges      EventJudge[]
+  scores      Score[]
+  guestVotes  GuestVote[]
+  winners     EventWinner[]
+}
+
+model Contestant {
+  id        String @id @default(cuid())
+  stageName String
+  style     String @default("Heat Performance")
+  notes     String @default("")
+
+  events           EventContestant[]
+  scores           Score[]
+  guestVoteChoices GuestVoteChoice[]
+  winners          EventWinner[]
+}
+
+model EventContestant {
+  eventId      String
+  contestantId String
+  order        Int    @default(1)
+  style        String @default("Heat Performance")
+  notes        String @default("")
+
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  contestant Contestant @relation(fields: [contestantId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, contestantId])
+}
+
+model Judge {
+  id   String @id @default(cuid())
+  name String
+  code String @unique
+
+  events EventJudge[]
+  scores Score[]
+}
+
+model EventJudge {
+  eventId String
+  judgeId String
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  judge Judge @relation(fields: [judgeId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, judgeId])
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  order Int    @default(0)
+
+  scoreValues ScoreValue[]
+}
+
+model GuestCategory {
+  id    String @id @default(cuid())
+  name  String
+  order Int    @default(0)
+
+  guestVoteChoices GuestVoteChoice[]
+}
+
+model Score {
+  id           String   @id @default(cuid())
+  eventId      String
+  judgeId      String
+  contestantId String
+  comment      String   @default("")
+  updatedAt    DateTime @updatedAt
+
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  judge      Judge      @relation(fields: [judgeId], references: [id], onDelete: Cascade)
+  contestant Contestant @relation(fields: [contestantId], references: [id], onDelete: Cascade)
+  values     ScoreValue[]
+
+  @@unique([eventId, judgeId, contestantId])
+}
+
+model ScoreValue {
+  scoreId    String
+  categoryId String
+  value      Int
+
+  score    Score    @relation(fields: [scoreId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([scoreId, categoryId])
+}
+
+model GuestVote {
+  id         String   @id @default(cuid())
+  eventId    String
+  voterToken String
+  voterName  String   @default("Anonymous")
+  anonymous  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  event   Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  choices GuestVoteChoice[]
+
+  @@unique([eventId, voterToken])
+}
+
+model GuestVoteChoice {
+  guestVoteId     String
+  guestCategoryId String
+  contestantId    String
+
+  guestVote     GuestVote     @relation(fields: [guestVoteId], references: [id], onDelete: Cascade)
+  guestCategory GuestCategory @relation(fields: [guestCategoryId], references: [id], onDelete: Cascade)
+  contestant    Contestant    @relation(fields: [contestantId], references: [id], onDelete: Cascade)
+
+  @@id([guestVoteId, guestCategoryId])
+}
+
+model EventWinner {
+  eventId      String
+  contestantId String
+  type         String
+
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  contestant Contestant @relation(fields: [contestantId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, contestantId, type])
+}

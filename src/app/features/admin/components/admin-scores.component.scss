@@ -1,0 +1,18 @@
+.admin-section { h2 { margin: 0 0 20px; font-size: 1.4rem; } }
+.event-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.event-tab {
+  padding: 7px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: rgba(255,255,255,0.7); cursor: pointer; font-family: inherit; font-size: 0.88rem;
+  display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+  &:hover { border-color: rgba(255,31,143,0.4); color: #fff; }
+  &.active { border-color: var(--qq-pink); background: rgba(255,31,143,0.15); color: #fff; }
+}
+.scores-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.leaderboard-card { margin-bottom: 16px; }
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); &:last-child { border-bottom: none; } &.top .lb-rank { color: var(--qq-gold); font-weight: 700; } }
+.lb-rank { width: 24px; font-size: 0.9rem; color: rgba(255,255,255,0.4); }
+.lb-name { flex: 1; font-weight: 600; }
+.lb-judges { font-size: 0.8rem; }
+.missing-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.missing-icon { font-size: 16px; width: 16px; height: 16px; color: #f59e0b; }
+.score-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); &:last-child { border-bottom: none; } &__info { flex: 1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } &__comment { font-size: 0.8rem; font-style: italic; } }

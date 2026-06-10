@@ -1,0 +1,74 @@
+.audience-page { min-height: 100vh; position: relative; overflow: hidden; }
+.audience-shell { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 16px 120px; }
+
+.audience-header {
+  display: flex; align-items: center; gap: 14px; padding: 28px 0 20px;
+  &__logo { width: 48px; height: 48px; border-radius: 12px; }
+  &__title { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--qq-pink), var(--qq-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+}
+
+.audience-event-card {
+  margin-bottom: 16px;
+  &__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  h2 { margin: 6px 0 4px; font-size: 1.2rem; }
+}
+
+.audience-progress {
+  margin-bottom: 16px;
+  &__row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
+}
+
+.audience-cat {
+  margin-bottom: 16px;
+  &__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; h3 { margin: 0; font-size: 1rem; } }
+}
+
+.audience-choices {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;
+}
+
+.audience-choice {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; cursor: pointer; text-align: left; position: relative;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; color: inherit; font-family: inherit;
+
+  &__num { font-size: 0.7rem; color: var(--qq-gold); font-weight: 600; letter-spacing: 0.05em; }
+  &__name { font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+  &__check { position: absolute; top: 8px; right: 8px; font-size: 18px; color: var(--qq-green); }
+
+  &:hover { border-color: rgba(255,31,143,0.4); background: rgba(255,31,143,0.08); }
+  &.selected {
+    border-color: var(--qq-pink); background: rgba(255,31,143,0.15);
+    box-shadow: 0 0 12px rgba(255,31,143,0.25);
+  }
+}
+
+.audience-name-card { margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; }
+.audience-anon-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: rgba(255,255,255,0.7); cursor: pointer; }
+
+.audience-actions {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 16px 24px; background: rgba(15,10,30,0.9); backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,31,143,0.15); z-index: 10;
+}
+
+.audience-submit-btn {
+  width: 100%; max-width: 420px; height: 48px; font-size: 1rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+
+.audience-thanks { text-align: center; h2 { margin: 10px 0 6px; font-size: 1.5rem; } p { margin-bottom: 20px; } }
+
+.audience-results { margin-top: 24px; text-align: left; h3 { font-size: 1rem; margin-bottom: 14px; color: var(--qq-gold); } }
+
+.audience-result-cat { margin-bottom: 20px; h4 { font-size: 0.9rem; font-weight: 600; margin: 0 0 8px; color: rgba(255,255,255,0.7); } }
+
+.audience-result-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-radius: 8px; margin-bottom: 6px;
+  background: rgba(255,255,255,0.04); border: 1px solid transparent;
+  &.leader { border-color: var(--qq-gold); background: rgba(255,209,102,0.08); }
+  &__name { font-size: 0.9rem; }
+}

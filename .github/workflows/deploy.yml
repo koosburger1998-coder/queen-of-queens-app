@@ -1,0 +1,82 @@
+name: Build & Deploy
+
+# Runs on every push to main.
+# Pull requests to main run the build job only (no deploy).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1: Build & type-check both apps
+  # ─────────────────────────────────────────────
+  build:
+    name: Build & type-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'                          # caches ~/.npm using package-lock.json
+
+      # Cache the backend npm cache separately since it has its own lock file
+      - name: Cache backend node_modules
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: backend-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: backend-${{ runner.os }}-
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      # prisma generate reads schema.prisma and outputs the TS client.
+      # It does not connect to a database, but the env var must be present.
+      - name: Generate Prisma client
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+        run: npx prisma generate
+
+      # Angular production build — fails on any type error or template error
+      - name: Build Angular (production)
+        run: npm run build:prod
+
+      # NestJS build — fails on any TypeScript error
+      - name: Build NestJS
+        working-directory: backend
+        run: npm run build
+
+  # ─────────────────────────────────────────────
+  # JOB 2: Trigger Render deploy (main only)
+  # ─────────────────────────────────────────────
+  deploy:
+    name: Deploy to Render
+    needs: build                               # only runs if the build job passes
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      # Calls the Render deploy hook — Render starts a new build immediately.
+      # Add RENDER_DEPLOY_HOOK_URL to your repo secrets:
+      #   GitHub repo → Settings → Secrets and variables → Actions → New secret
+      # Get the hook URL from:
+      #   Render dashboard → your Web Service → Settings → Deploy Hook
+      - name: Trigger Render deploy
+        run: |
+          curl --fail --silent --show-error -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo "Deploy triggered successfully."

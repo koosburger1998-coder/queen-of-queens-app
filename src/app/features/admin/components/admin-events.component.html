@@ -1,0 +1,113 @@
+<div class="admin-section" *ngIf="admin$ | async as admin">
+  <div class="admin-section__head">
+    <h2>Events</h2>
+    <button mat-raised-button color="primary" (click)="startCreate()" *ngIf="!creating">
+      <mat-icon>add</mat-icon> New Event
+    </button>
+  </div>
+
+  <div class="qq-card" *ngIf="creating">
+    <h3>Create Event</h3>
+    <div class="form-grid">
+      <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="draft.name" placeholder="Event name"></div>
+      <div class="form-field"><label class="qq-label">Date</label><input class="qq-input" type="date" [(ngModel)]="draft.date"></div>
+      <div class="form-field"><label class="qq-label">Venue</label><input class="qq-input" [(ngModel)]="draft.venue" placeholder="Venue"></div>
+      <div class="form-field"><label class="qq-label">Expected Contestants</label><input class="qq-input" type="number" [(ngModel)]="draft.expectedContestants" min="1"></div>
+      <div class="form-field"><label class="qq-label">Songs / Contestant</label><input class="qq-input" type="number" [(ngModel)]="draft.songCount" min="1"></div>
+      <div class="form-field"><label class="qq-label">Advance Count</label><input class="qq-input" type="number" [(ngModel)]="draft.advanceCount" min="1"></div>
+    </div>
+    <div class="form-field"><label class="qq-label">Description</label><textarea class="qq-input" [(ngModel)]="draft.description" rows="3" placeholder="Event description"></textarea></div>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" (click)="save()">Create</button>
+      <button mat-button (click)="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+
+  <div *ngFor="let ev of admin.events; trackBy: trackById" class="qq-card event-card">
+    <div class="event-card__head">
+      <div>
+        <span class="qq-badge qq-badge--gold" *ngIf="ev.isActive">Active</span>
+        <span class="qq-badge" *ngIf="!ev.isActive">Inactive</span>
+        <h3>{{ ev.name }}</h3>
+        <p class="qq-muted">{{ ev.date | qqDate }}<span *ngIf="ev.venue"> &bull; {{ ev.venue }}</span></p>
+      </div>
+      <div class="event-card__actions">
+        <button mat-icon-button title="Edit" (click)="startEdit(ev)"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button title="Delete" (click)="del(ev.id)" color="warn"><mat-icon>delete</mat-icon></button>
+      </div>
+    </div>
+
+    <div class="event-card__body" *ngIf="editingId === ev.id">
+      <div class="form-grid">
+        <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="draft.name"></div>
+        <div class="form-field"><label class="qq-label">Date</label><input class="qq-input" type="date" [(ngModel)]="draft.date"></div>
+        <div class="form-field"><label class="qq-label">Venue</label><input class="qq-input" [(ngModel)]="draft.venue"></div>
+        <div class="form-field"><label class="qq-label">Expected Contestants</label><input class="qq-input" type="number" [(ngModel)]="draft.expectedContestants"></div>
+        <div class="form-field"><label class="qq-label">Songs</label><input class="qq-input" type="number" [(ngModel)]="draft.songCount"></div>
+        <div class="form-field"><label class="qq-label">Advance</label><input class="qq-input" type="number" [(ngModel)]="draft.advanceCount"></div>
+      </div>
+      <div class="form-field"><label class="qq-label">Description</label><textarea class="qq-input" [(ngModel)]="draft.description" rows="2"></textarea></div>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" (click)="save()">Save</button>
+        <button mat-button (click)="cancelEdit()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="event-card__locks">
+      <button mat-stroked-button (click)="activate(ev.id)" *ngIf="!ev.isActive">Set Active</button>
+      <button mat-stroked-button (click)="lockScores(ev.id, ev.scoringLocked)">
+        <mat-icon>{{ ev.scoringLocked ? 'lock_open' : 'lock' }}</mat-icon>
+        {{ ev.scoringLocked ? 'Unlock Scoring' : 'Lock Scoring' }}
+      </button>
+      <button mat-stroked-button (click)="lockVoting(ev.id, ev.guestVotingLocked)">
+        <mat-icon>{{ ev.guestVotingLocked ? 'lock_open' : 'lock' }}</mat-icon>
+        {{ ev.guestVotingLocked ? 'Unlock Audience' : 'Lock Audience' }}
+      </button>
+      <button mat-stroked-button (click)="toggleAssign(ev.id)">
+        <mat-icon>{{ showAssign[ev.id] ? 'expand_less' : 'people' }}</mat-icon>
+        {{ showAssign[ev.id] ? 'Hide Assignments' : 'Manage Assignments' }}
+      </button>
+    </div>
+
+    <div class="event-assign-panel" *ngIf="showAssign[ev.id]">
+      <div class="assign-col">
+        <h4><mat-icon>gavel</mat-icon> Judges</h4>
+        <p class="qq-muted" *ngIf="!admin.allJudges.length">No judges created yet.</p>
+        <div *ngFor="let j of admin.allJudges; trackBy: trackById" class="assign-row">
+          <mat-icon class="assign-row__icon" [class.assigned]="isAssigned(ev.assignedJudgeIds, j.id)">
+            {{ isAssigned(ev.assignedJudgeIds, j.id) ? 'check_circle' : 'radio_button_unchecked' }}
+          </mat-icon>
+          <span class="assign-row__name">{{ j.name }}</span>
+          <button mat-icon-button color="warn" *ngIf="isAssigned(ev.assignedJudgeIds, j.id)"
+            (click)="removeJudge(ev.id, j.id)" title="Remove from event">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="!isAssigned(ev.assignedJudgeIds, j.id)"
+            (click)="addJudge(ev.id, j.id)" title="Add to event">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="assign-col">
+        <h4><mat-icon>star</mat-icon> Contestants</h4>
+        <p class="qq-muted" *ngIf="!admin.allContestants.length">No contestants created yet.</p>
+        <div *ngFor="let c of admin.allContestants; trackBy: trackById" class="assign-row">
+          <mat-icon class="assign-row__icon" [class.assigned]="isAssigned(ev.assignedContestantIds, c.id)">
+            {{ isAssigned(ev.assignedContestantIds, c.id) ? 'check_circle' : 'radio_button_unchecked' }}
+          </mat-icon>
+          <span class="assign-row__name">{{ c.stageName }}</span>
+          <span class="qq-muted assign-row__style">{{ c.style }}</span>
+          <button mat-icon-button color="warn" *ngIf="isAssigned(ev.assignedContestantIds, c.id)"
+            (click)="removeContestant(ev.id, c.id)" title="Remove from event">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="!isAssigned(ev.assignedContestantIds, c.id)"
+            (click)="addContestant(ev.id, c.id)" title="Add to event">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

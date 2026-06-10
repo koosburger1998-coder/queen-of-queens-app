@@ -1,0 +1,40 @@
+<div class="admin-page" *ngIf="auth.adminToken; else loginTpl">
+  <aside class="admin-sidebar" [class.open]="sidebarOpen">
+    <div class="admin-sidebar__brand">
+      <img src="assets/logo.svg" onerror="this.style.display='none'" alt="" class="admin-sidebar__logo">
+      <span>Admin</span>
+    </div>
+    <nav class="admin-sidebar__nav">
+      <a *ngFor="let item of navItems"
+        [routerLink]="item.path" routerLinkActive="active"
+        class="admin-nav-item"
+        (click)="sidebarOpen = false">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+    <div class="admin-sidebar__footer">
+      <button class="admin-nav-item admin-logout" (click)="logout()">
+        <mat-icon>logout</mat-icon><span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="admin-overlay" *ngIf="sidebarOpen" (click)="sidebarOpen = false"></div>
+
+  <div class="admin-content">
+    <header class="admin-topbar">
+      <button class="admin-topbar__hamburger" (click)="toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="admin-topbar__title">Queen of Queens &mdash; Admin</span>
+    </header>
+    <div class="admin-main">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<ng-template #loginTpl>
+  <app-admin-login></app-admin-login>
+</ng-template>

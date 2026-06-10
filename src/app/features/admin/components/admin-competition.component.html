@@ -1,0 +1,78 @@
+<div class="admin-section" *ngIf="admin$ | async as admin">
+  <h2>Competition</h2>
+
+  <!-- Config -->
+  <div class="qq-card comp-config">
+    <div class="comp-config__head">
+      <h3>Configuration</h3>
+      <button mat-icon-button (click)="startEditConfig(admin.competition)" *ngIf="!editingConfig"><mat-icon>edit</mat-icon></button>
+    </div>
+    <ng-container *ngIf="!editingConfig && admin.competition">
+      <div class="comp-stat-grid">
+        <div class="comp-stat"><span class="qq-muted">Name</span><strong>{{ admin.competition.name }}</strong></div>
+        <div class="comp-stat"><span class="qq-muted">Total</span><strong>{{ admin.competition.totalContestants }}</strong></div>
+        <div class="comp-stat"><span class="qq-muted">Heats</span><strong>{{ admin.competition.heats }}</strong></div>
+        <div class="comp-stat"><span class="qq-muted">Per Heat</span><strong>{{ admin.competition.contestantsPerHeat }}</strong></div>
+        <div class="comp-stat"><span class="qq-muted">Songs</span><strong>{{ admin.competition.songsPerContestant }}</strong></div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="editingConfig">
+      <div class="form-grid">
+        <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="configDraft.name"></div>
+        <div class="form-field"><label class="qq-label">Total Contestants</label><input class="qq-input" type="number" [(ngModel)]="configDraft.totalContestants"></div>
+        <div class="form-field"><label class="qq-label">Heats</label><input class="qq-input" type="number" [(ngModel)]="configDraft.heats"></div>
+        <div class="form-field"><label class="qq-label">Per Heat</label><input class="qq-input" type="number" [(ngModel)]="configDraft.contestantsPerHeat"></div>
+        <div class="form-field"><label class="qq-label">Songs / Contestant</label><input class="qq-input" type="number" [(ngModel)]="configDraft.songsPerContestant"></div>
+      </div>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" (click)="saveConfig()">Save</button>
+        <button mat-button (click)="editingConfig = false">Cancel</button>
+      </div>
+    </ng-container>
+    <button mat-stroked-button color="primary" class="comp-setup-btn" (click)="setupAll()" *ngIf="!editingConfig">
+      <mat-icon>auto_awesome</mat-icon> Setup All Rounds
+    </button>
+  </div>
+
+  <!-- Events/Rounds -->
+  <div *ngFor="let ev of admin.events; trackBy: trackByKey" class="qq-card round-card">
+    <div class="round-card__head">
+      <div>
+        <span class="qq-badge qq-badge--gold" *ngIf="ev.isActive">Active</span>
+        <h3>{{ ev.name }}</h3>
+        <p class="qq-muted">{{ ev.roundKey }}<span *ngIf="ev.roundType"> &bull; {{ ev.roundType }}</span></p>
+      </div>
+      <button mat-stroked-button (click)="populate(ev.roundKey)" *ngIf="ev.roundKey">
+        <mat-icon>people</mat-icon> Populate
+      </button>
+    </div>
+
+    <!-- Winners selection (QF wildcards, SF, GF) -->
+    <div *ngIf="ev.contestants?.length" class="round-winners">
+      <p class="qq-label">Select Advancing Contestants</p>
+      <div class="round-choices">
+        <button *ngFor="let c of ev.contestants; trackBy: trackById"
+          class="round-choice"
+          [class.winner]="isSelected(ev.id, c.id, 'winner')"
+          [class.wildcard]="isSelected(ev.id, c.id, 'wildcard')"
+          (click)="toggleWinner(ev.id, c.id, 'winner')">
+          {{ c.stageName }}
+          <mat-icon *ngIf="isSelected(ev.id, c.id, 'winner')">emoji_events</mat-icon>
+        </button>
+      </div>
+      <p class="qq-label" style="margin-top:10px">Wildcards (QF only)</p>
+      <div class="round-choices">
+        <button *ngFor="let c of ev.contestants; trackBy: trackById"
+          class="round-choice"
+          [class.wildcard]="isSelected(ev.id, c.id, 'wildcard')"
+          (click)="toggleWinner(ev.id, c.id, 'wildcard')">
+          {{ c.stageName }}
+          <mat-icon *ngIf="isSelected(ev.id, c.id, 'wildcard')">stars</mat-icon>
+        </button>
+      </div>
+      <button mat-raised-button color="primary" (click)="saveWinners(ev.id)" style="margin-top:12px">
+        <mat-icon>save</mat-icon> Save Advancing
+      </button>
+    </div>
+  </div>
+</div>

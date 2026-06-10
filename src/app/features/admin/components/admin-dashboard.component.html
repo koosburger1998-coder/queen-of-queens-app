@@ -1,0 +1,45 @@
+<div class="admin-section" *ngIf="admin$ | async as admin">
+  <h2>Dashboard</h2>
+
+  <div class="dash-grid">
+    <div class="qq-card dash-stat">
+      <span class="qq-badge qq-badge--gold">Events</span>
+      <div class="dash-stat__num">{{ admin.events.length }}</div>
+    </div>
+    <div class="qq-card dash-stat">
+      <span class="qq-badge qq-badge--green">Contestants</span>
+      <div class="dash-stat__num">{{ admin.contestants.length }}</div>
+    </div>
+    <div class="qq-card dash-stat">
+      <span class="qq-badge qq-badge--purple">Judges</span>
+      <div class="dash-stat__num">{{ admin.judges.length }}</div>
+    </div>
+  </div>
+
+  <div class="qq-card" *ngIf="admin.activeEvent">
+    <h3>Active Event</h3>
+    <p><strong>{{ admin.activeEvent.name }}</strong></p>
+    <p class="qq-muted">{{ admin.activeEvent.date | qqDate }}<span *ngIf="admin.activeEvent.venue"> &bull; {{ admin.activeEvent.venue }}</span></p>
+    <div class="badge-row">
+      <span class="qq-badge" [class.qq-badge--red]="admin.activeEvent.scoringLocked">{{ admin.activeEvent.scoringLocked ? 'Scoring Locked' : 'Scoring Open' }}</span>
+      <span class="qq-badge" [class.qq-badge--red]="admin.activeEvent.guestVotingLocked">{{ admin.activeEvent.guestVotingLocked ? 'Guest Voting Locked' : 'Guest Voting Open' }}</span>
+    </div>
+  </div>
+
+  <div class="qq-card" *ngIf="admin.leaderboard.length">
+    <h3>Leaderboard</h3>
+    <div *ngFor="let entry of admin.leaderboard; let i = index; trackBy: trackById" class="dash-leaderboard-row" [class.top]="i === 0">
+      <span class="dash-lb__rank">{{ i + 1 }}</span>
+      <span class="dash-lb__name">{{ entry.stageName }}</span>
+      <span class="qq-badge qq-badge--gold">{{ entry.total }}</span>
+    </div>
+  </div>
+
+  <div class="qq-card" *ngIf="admin.missingVotes.length">
+    <h3>Missing Votes</h3>
+    <div *ngFor="let mv of admin.missingVotes; trackBy: trackById" class="dash-missing-row">
+      <span>{{ mv.judgeName }}</span>
+      <span class="qq-muted">has not scored {{ mv.contestantName }}</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+.admin-section { h2 { margin: 0 0 20px; font-size: 1.4rem; } }
+.comp-config { margin-bottom: 20px; &__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; h3 { margin: 0; } } }
+.comp-stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.comp-stat { display: flex; flex-direction: column; gap: 3px; strong { font-size: 1.1rem; } }
+.comp-setup-btn { margin-top: 4px; }
+.round-card { margin-bottom: 16px; &__head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; h3 { margin: 4px 0 2px; } } }
+.round-winners { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; }
+.round-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.round-choice {
+  padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: inherit; cursor: pointer; font-family: inherit; font-size: 0.9rem;
+  display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+  &:hover { border-color: rgba(255,31,143,0.4); }
+  &.winner { border-color: var(--qq-gold); background: rgba(255,209,102,0.1); }
+  &.wildcard { border-color: var(--qq-purple); background: rgba(139,92,246,0.1); }
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-actions { display: flex; gap: 10px; }

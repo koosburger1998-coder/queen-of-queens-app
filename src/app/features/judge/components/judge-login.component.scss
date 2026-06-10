@@ -1,0 +1,3 @@
+.qq-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; z-index: 1; }
+.qq-card--login { width: min(540px, 100%); text-align: center; }
+.qq-login__logo { width: 140px; height: 140px; border-radius: 28px; object-fit: cover; margin: 0 auto 16px; display: block; box-shadow: 0 0 28px rgba(255,31,143,.3); }
