@@ -1,0 +1,117 @@
+<app-navbar></app-navbar>
+<div class="audience-page">
+  <div class="qq-bg"></div>
+  <div class="qq-stars"></div>
+
+  <main class="audience-shell">
+    <header class="audience-header">
+      <img class="audience-header__logo" src="assets/logo.svg" alt="Queen of Queens">
+      <h1 class="audience-header__title">Audience Vote</h1>
+    </header>
+
+    <div class="audience-body">
+      <ng-container *ngIf="loading$ | async"><app-spinner [diameter]="40" label="Loading…"></app-spinner></ng-container>
+
+      <ng-container *ngIf="!(loading$ | async)">
+        <ng-container *ngTemplateOutlet="mainTpl; context: {
+          event: event$ | async,
+          contestants: contestants$ | async,
+          categories: categories$ | async,
+          summary: summary$ | async,
+          hasVoted: hasVoted$ | async,
+          submitting: submitting$ | async,
+          error: error$ | async
+        }"></ng-container>
+      </ng-container>
+    </div>
+  </main>
+</div>
+
+<ng-template #mainTpl let-event="event" let-contestants="contestants" let-categories="categories"
+  let-summary="summary" let-hasVoted="hasVoted" let-submitting="submitting" let-error="error">
+
+  <div class="qq-card audience-event-card" *ngIf="event">
+    <div class="audience-event-card__top">
+      <div>
+        <span class="qq-badge qq-badge--gold">Guest Ballot</span>
+        <h2>{{ event.name }}</h2>
+        <p class="qq-muted">{{ event.date | qqDate }}<span *ngIf="event.venue"> &bull; {{ event.venue }}</span></p>
+      </div>
+      <span class="qq-badge" [class.qq-badge--green]="!event.guestVotingLocked" [class.qq-badge--red]="event.guestVotingLocked">
+        {{ event.guestVotingLocked ? 'Voting Closed' : 'Voting Open' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- ALREADY VOTED -->
+  <div class="qq-card audience-thanks" *ngIf="hasVoted">
+    <span class="qq-badge qq-badge--green">Submitted</span>
+    <h2>Thank you!</h2>
+    <p class="qq-muted">Your audience vote has been captured.</p>
+    <div class="audience-results" *ngIf="summary?.length">
+      <h3>Current Results</h3>
+      <div *ngFor="let s of summary; trackBy: trackById" class="audience-result-cat">
+        <h4>{{ s.categoryName }}</h4>
+        <div *ngFor="let row of s.totals; let i = index" class="audience-result-row" [class.leader]="i === 0 && row.points > 0">
+          <span class="audience-result-row__name">{{ row.contestantName }}</span>
+          <span class="qq-badge qq-badge--gold">{{ row.points }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOTE FORM -->
+  <ng-container *ngIf="!hasVoted && !event?.guestVotingLocked">
+    <div class="audience-progress qq-card">
+      <ng-container *ngVar="getProgress(categories) as prog">
+        <div class="audience-progress__row">
+          <span>{{ prog.done }} of {{ prog.total }} selected</span>
+          <span class="qq-badge qq-badge--gold">{{ prog.percent }}% done</span>
+        </div>
+        <div class="qq-progressbar"><div class="qq-progressbar__fill" [style.width.%]="prog.percent"></div></div>
+      </ng-container>
+    </div>
+
+    <div *ngFor="let cat of categories; trackBy: trackById" class="qq-card audience-cat">
+      <div class="audience-cat__head">
+        <h3>{{ cat.name }}</h3>
+        <span class="qq-badge qq-badge--green" *ngIf="selections[cat.id]">Selected</span>
+      </div>
+      <div class="audience-choices">
+        <button *ngFor="let c of contestants; trackBy: trackById"
+          class="audience-choice"
+          [class.selected]="selections[cat.id] === c.id"
+          (click)="select(cat.id, c.id)">
+          <span class="audience-choice__num">{{ c.order }}</span>
+          <strong class="audience-choice__name">{{ c.stageName }}</strong>
+          <small class="qq-muted">{{ c.style }}</small>
+          <mat-icon class="audience-choice__check" *ngIf="selections[cat.id] === c.id">check</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="qq-card audience-name-card">
+      <label class="qq-label">Your name <span class="qq-muted">(optional)</span></label>
+      <input class="qq-input" [(ngModel)]="voterName" placeholder="Enter name or leave blank" autocomplete="off">
+      <label class="audience-anon-label">
+        <input type="checkbox" [(ngModel)]="stayAnonymous"> Stay anonymous
+      </label>
+    </div>
+
+    <div class="audience-actions">
+      <button mat-raised-button color="primary" class="audience-submit-btn"
+        [disabled]="!allSelected(categories) || submitting"
+        (click)="submit(categories)">
+        <mat-progress-spinner *ngIf="submitting" diameter="20" mode="indeterminate"></mat-progress-spinner>
+        Submit Audience Vote
+      </button>
+      <div class="qq-error" *ngIf="error">{{ error }} <button mat-icon-button (click)="clearError()"><mat-icon>close</mat-icon></button></div>
+    </div>
+  </ng-container>
+
+  <div class="qq-card" *ngIf="!hasVoted && event?.guestVotingLocked">
+    <span class="qq-badge qq-badge--red">Closed</span>
+    <h2>Voting closed</h2>
+    <p class="qq-muted">Audience voting is currently locked.</p>
+  </div>
+</ng-template>

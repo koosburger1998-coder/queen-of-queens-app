@@ -1,0 +1,63 @@
+<div class="admin-section" *ngIf="admin$ | async as admin">
+  <h2>Scores</h2>
+
+  <div class="event-tabs" *ngIf="admin.events?.length">
+    <button *ngFor="let ev of admin.events; trackBy: trackById"
+      class="event-tab"
+      [class.active]="selectedEventId === ev.id"
+      (click)="selectEvent(ev.id)">
+      {{ ev.name }}
+      <span class="qq-badge qq-badge--gold" *ngIf="ev.isActive">Active</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="selectedEventId">
+    <ng-container *ngFor="let ev of admin.events; trackBy: trackById">
+      <ng-container *ngIf="ev.id === selectedEventId">
+        <div class="scores-toolbar">
+          <button mat-stroked-button (click)="export(ev.id)">
+            <mat-icon>download</mat-icon> Export CSV
+          </button>
+          <button mat-stroked-button color="warn" (click)="resetScores(ev.id)">
+            <mat-icon>restart_alt</mat-icon> Reset All Scores
+          </button>
+        </div>
+
+        <div class="qq-card leaderboard-card" *ngIf="admin.leaderboard?.length">
+          <h3>Leaderboard</h3>
+          <div *ngFor="let entry of admin.leaderboard; let i = index; trackBy: trackById" class="lb-row" [class.top]="i === 0">
+            <span class="lb-rank">{{ i + 1 }}</span>
+            <span class="lb-name">{{ entry.stageName }}</span>
+            <span class="qq-badge qq-badge--gold">{{ entry.total }}</span>
+            <span class="qq-muted lb-judges">{{ entry.judgeCount }} judge(s)</span>
+          </div>
+        </div>
+
+        <div class="qq-card" *ngIf="admin.missingVotes?.length">
+          <h3>Missing Votes</h3>
+          <div *ngFor="let mv of admin.missingVotes; trackBy: trackById" class="missing-row">
+            <mat-icon class="missing-icon">warning</mat-icon>
+            <span>{{ mv.judgeName }}</span>
+            <span class="qq-muted">&rarr; {{ mv.contestantName }}</span>
+          </div>
+        </div>
+
+        <div class="qq-card" *ngIf="admin.scores?.length">
+          <h3>All Score Entries</h3>
+          <div *ngFor="let s of admin.scores; trackBy: trackById" class="score-row">
+            <div class="score-row__info">
+              <strong>{{ s.judgeName }}</strong>
+              <span class="qq-muted">&rarr; {{ s.contestantName }}</span>
+              <span class="qq-badge">Total: {{ s.total }}</span>
+              <span class="qq-muted score-row__comment" *ngIf="s.comment">{{ s.comment }}</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="delScore(s.id)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+  <p class="qq-muted" *ngIf="!admin.events?.length">No events yet.</p>
+  <p class="qq-muted" *ngIf="admin.events?.length && !selectedEventId">Select an event above to view scores.</p>
+</div>

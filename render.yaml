@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: queen-of-queens-app
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && cd backend && npm install && npx prisma generate && cd .. && npm run build:prod && cd backend && npm run build
+    startCommand: cd backend && npx prisma migrate deploy && node dist/main.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: queen-of-queens-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: queen-of-queens-db
+    databaseName: queen_of_queens
+    user: qquser
+    plan: free

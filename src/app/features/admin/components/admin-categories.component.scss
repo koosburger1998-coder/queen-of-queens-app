@@ -1,0 +1,7 @@
+.admin-section { h2 { margin: 0 0 20px; font-size: 1.4rem; } }
+.cat-panel { margin-bottom: 28px; &__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; h3 { margin: 0; } } }
+.cat-list { padding: 0; }
+.cat-row { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); &:last-child { border-bottom: none; } &__order { font-size: 0.8rem; color: var(--qq-gold); width: 28px; } &__name { flex: 1; font-size: 0.95rem; } &__actions { display: flex; gap: 2px; } &__edit { flex: 1; padding: 4px 0; } }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-actions { display: flex; gap: 10px; }

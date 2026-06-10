@@ -1,0 +1,8 @@
+.admin-section { h2 { margin: 0 0 20px; font-size: 1.4rem; } }
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.dash-stat { text-align: center; &__num { font-size: 2.5rem; font-weight: 700; margin-top: 10px; background: linear-gradient(135deg, var(--qq-pink), var(--qq-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } }
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.dash-leaderboard-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); &.top .dash-lb__rank { color: var(--qq-gold); font-weight: 700; } }
+.dash-lb__rank { width: 24px; font-size: 0.9rem; color: rgba(255,255,255,0.4); }
+.dash-lb__name { flex: 1; font-size: 0.95rem; }
+.dash-missing-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }

@@ -1,0 +1,174 @@
+<app-navbar></app-navbar>
+<div class="judge-page">
+  <div class="qq-bg"></div>
+  <div class="qq-stars"></div>
+
+  <div class="judge-shell">
+    <!-- LOGIN -->
+    <ng-container *ngIf="!isLoggedIn">
+      <app-judge-login (loginSuccess)="onLoginSuccess()"></app-judge-login>
+    </ng-container>
+
+    <!-- LOADING -->
+    <ng-container *ngIf="isLoggedIn && (loading$ | async) && !(contestants$ | async)?.length">
+      <app-spinner [diameter]="48" label="Loading judge app…" [overlay]="true"></app-spinner>
+    </ng-container>
+
+    <!-- VOTING -->
+    <ng-container *ngIf="isLoggedIn && !(loading$ | async)">
+      <ng-container *ngTemplateOutlet="votingTpl; context: {
+        event: event$ | async,
+        contestants: contestants$ | async,
+        categories: categories$ | async,
+        current: currentContestant$ | async,
+        currentScore: currentScore$ | async,
+        progress: progress$ | async,
+        myScores: myScores$ | async,
+        index: currentIndex$ | async,
+        submitting: submitting$ | async,
+        error: error$ | async
+      }"></ng-container>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #votingTpl let-event="event" let-contestants="contestants" let-categories="categories"
+  let-current="current" let-currentScore="currentScore" let-progress="progress"
+  let-myScores="myScores" let-index="index" let-submitting="submitting" let-error="error">
+
+  <!-- NO CONTESTANTS -->
+  <div class="qq-card" *ngIf="!contestants?.length">
+    <div class="qq-card__logo"><img src="assets/logo.svg" alt="Logo"></div>
+    <h2>{{ event?.name || 'Queen of Queens' }}</h2>
+    <p class="qq-muted">No contestants assigned yet. Check back soon.</p>
+    <div class="qq-btns"><button mat-stroked-button (click)="onLogout()">Logout</button></div>
+  </div>
+
+  <!-- MAIN VOTING UI -->
+  <ng-container *ngIf="contestants?.length">
+    <header class="judge-topbar">
+      <div class="judge-topbar__brand">
+        <img src="assets/logo.svg" alt="Logo" class="judge-topbar__logo">
+        <div>
+          <h1 class="judge-topbar__title">{{ event?.name || 'Queen of Queens' }}</h1>
+          <p class="judge-topbar__sub">Judge: {{ auth.currentJudge?.name }}</p>
+        </div>
+      </div>
+      <button mat-stroked-button (click)="onLogout()" class="judge-topbar__logout">Logout</button>
+    </header>
+
+    <!-- ALL DONE SCREEN -->
+    <div class="judge-complete-card qq-card" *ngIf="allDone(progress) && !reviewing">
+      <div class="judge-complete-card__icon"><mat-icon>emoji_events</mat-icon></div>
+      <h2>Scoring Complete!</h2>
+      <p class="qq-muted">You have scored all {{ progress.total }} contestants. Great work!</p>
+      <div class="judge-complete-list">
+        <div *ngFor="let c of contestants; trackBy: trackById" class="judge-complete-row">
+          <span class="judge-complete-row__num">{{ c.order }}</span>
+          <span class="judge-complete-row__name">{{ c.stageName }}</span>
+          <mat-icon class="judge-complete-row__check">check_circle</mat-icon>
+        </div>
+      </div>
+      <div class="judge-complete-actions">
+        <button mat-stroked-button (click)="navigate(0, contestants)">
+          <mat-icon>edit</mat-icon> Review &amp; Update Scores
+        </button>
+        <button mat-raised-button color="primary" (click)="onLogout()">
+          <mat-icon>logout</mat-icon> Finish &amp; Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- SCORING UI (hidden when all done and not reviewing) -->
+    <ng-container *ngIf="!allDone(progress) || reviewing">
+
+      <!-- PROGRESS -->
+      <div class="judge-progress">
+        <div class="judge-progress__row">
+          <span>{{ progress?.completed }} of {{ progress?.total }} scored</span>
+          <span class="qq-badge qq-badge--gold">{{ progress?.percent }}%</span>
+        </div>
+        <div class="qq-progressbar"><div class="qq-progressbar__fill" [style.width.%]="progress?.percent"></div></div>
+      </div>
+
+      <!-- CONTESTANT TABS -->
+      <div class="judge-tabs">
+        <button *ngFor="let c of contestants; let i = index; trackBy: trackById"
+          class="judge-tab"
+          [class.active]="i === index"
+          [class.done]="hasSubmitted(c.id, myScores)"
+          (click)="navigate(i, contestants)">
+          <span class="judge-tab__num">{{ c.order }}</span>
+          <mat-icon *ngIf="hasSubmitted(c.id, myScores)" class="judge-tab__check">check_circle</mat-icon>
+        </button>
+      </div>
+
+      <!-- CURRENT CONTESTANT CARD -->
+      <div class="judge-score-card qq-card" *ngIf="current">
+        <div class="judge-score-card__head">
+          <div>
+            <span class="qq-badge qq-badge--pink">#{{ current.order }}</span>
+            <h2 class="judge-score-card__name">{{ current.stageName }}</h2>
+            <p class="qq-muted">{{ current.style }}</p>
+            <p class="qq-muted" *ngIf="current.notes">{{ current.notes }}</p>
+          </div>
+          <span class="qq-badge qq-badge--green" *ngIf="hasSubmitted(current.id, myScores)">Scored</span>
+        </div>
+
+        <div class="judge-categories">
+          <div *ngFor="let cat of categories; trackBy: trackById" class="judge-cat">
+            <div class="judge-cat__head">
+              <span class="judge-cat__name">{{ cat.name }}</span>
+              <span class="qq-badge" [class.qq-badge--pink]="draftValues[cat.id]" [class.qq-badge--muted]="!draftValues[cat.id]">
+                {{ draftValues[cat.id] || '—' }}
+              </span>
+            </div>
+            <div class="judge-score-grid">
+              <button *ngFor="let n of [1,2,3,4,5,6,7,8,9,10]"
+                class="judge-score-btn"
+                [class.selected]="draftValues[cat.id] === n"
+                (click)="setScore(cat.id, n)">{{ n }}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="judge-comment" *ngIf="requiresComment || draftComment">
+          <label class="judge-comment__label">Comment <span class="qq-muted" *ngIf="requiresComment">(required for 1 or 10)</span></label>
+          <textarea class="judge-comment__input" [(ngModel)]="draftComment" placeholder="Add comment…" rows="3"></textarea>
+        </div>
+
+        <div class="judge-actions">
+          <div class="judge-total-panel" [class.judge-total-panel--complete]="totalScore > 0">
+            <div>
+              <p class="judge-total-panel__label">Total Score</p>
+              <p class="judge-total-panel__helper">{{ categories?.length || 0 }} categories</p>
+            </div>
+            <span class="judge-total-panel__num">{{ totalScore }}</span>
+          </div>
+
+          <div class="judge-bottom-btns">
+            <button mat-stroked-button (click)="navigate(index - 1, contestants)" [disabled]="index === 0">
+              <mat-icon>chevron_left</mat-icon> Prev
+            </button>
+            <button mat-raised-button color="primary" class="judge-submit-btn"
+              [disabled]="!allScored(categories) || (requiresComment && draftComment.trim().length < 5) || submitting"
+              (click)="submitScore(current.id, categories)">
+              <mat-icon *ngIf="submitting"><mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner></mat-icon>
+              <mat-icon *ngIf="!submitting">check</mat-icon>
+              {{ hasSubmitted(current.id, myScores) ? 'Update' : 'Submit' }}
+            </button>
+            <button mat-stroked-button (click)="navigate(index + 1, contestants)" [disabled]="index === contestants.length - 1">
+              Next <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <div class="qq-error" *ngIf="error">
+      {{ error }}
+      <button mat-icon-button (click)="clearError()"><mat-icon>close</mat-icon></button>
+    </div>
+  </ng-container>
+</ng-template>

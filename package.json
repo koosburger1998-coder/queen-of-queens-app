@@ -1,0 +1,48 @@
+{
+  "name": "queen-of-queens-app",
+  "version": "1.0.0",
+  "scripts": {
+    "ng": "ng",
+    "dev": "concurrently --kill-others --names \"ng,nest\" --prefix-colors \"magenta,cyan\" \"ng serve\" \"cd backend && npm run start:dev\"",
+    "start": "ng serve",
+    "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "build:backend": "cd backend && npm run build",
+    "build:all": "npm run build:prod && npm run build:backend",
+    "start:backend": "cd backend && node dist/main.js",
+    "install:all": "npm install && cd backend && npm install",
+    "prisma:migrate": "cd backend && npx prisma migrate deploy",
+    "prisma:generate": "cd backend && npx prisma generate"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^17.3.0",
+    "@angular/cdk": "^17.3.0",
+    "@angular/common": "^17.3.0",
+    "@angular/compiler": "^17.3.0",
+    "@angular/core": "^17.3.0",
+    "@angular/forms": "^17.3.0",
+    "@angular/material": "^17.3.0",
+    "@angular/platform-browser": "^17.3.0",
+    "@angular/platform-browser-dynamic": "^17.3.0",
+    "@angular/router": "^17.3.0",
+    "@angular/service-worker": "^17.3.0",
+    "@ngrx/effects": "^17.1.0",
+    "@ngrx/entity": "^17.1.0",
+    "@ngrx/router-store": "^17.1.0",
+    "@ngrx/store": "^17.1.0",
+    "@ngrx/store-devtools": "^17.1.0",
+    "rxjs": "~7.8.0",
+    "socket.io-client": "^4.7.4",
+    "tslib": "^2.6.2",
+    "zone.js": "~0.14.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.3.0",
+    "@angular/cli": "^17.3.0",
+    "@angular/compiler-cli": "^17.3.0",
+    "@types/socket.io-client": "^3.0.0",
+    "concurrently": "^10.0.3",
+    "typescript": "~5.4.2"
+  }
+}

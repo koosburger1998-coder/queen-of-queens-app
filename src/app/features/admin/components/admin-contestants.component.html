@@ -1,0 +1,47 @@
+<div class="admin-section" *ngIf="admin$ | async as admin">
+  <div class="admin-section__head">
+    <h2>Contestants</h2>
+    <button mat-raised-button color="primary" (click)="startCreate()" *ngIf="!creating">
+      <mat-icon>add</mat-icon> Add Contestant
+    </button>
+  </div>
+
+  <div class="qq-card" *ngIf="creating">
+    <h3>New Contestant</h3>
+    <div class="form-grid">
+      <div class="form-field"><label class="qq-label">Stage Name</label><input class="qq-input" [(ngModel)]="draft.stageName" placeholder="Stage name"></div>
+      <div class="form-field"><label class="qq-label">Style</label><input class="qq-input" [(ngModel)]="draft.style" placeholder="e.g. Glamour, Drag King"></div>
+    </div>
+    <div class="form-field"><label class="qq-label">Notes</label><textarea class="qq-input" [(ngModel)]="draft.notes" rows="2" placeholder="Internal notes"></textarea></div>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" (click)="save()">Create</button>
+      <button mat-button (click)="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="qq-card contestant-table" *ngIf="admin.contestants?.length">
+    <div *ngFor="let c of admin.contestants; trackBy: trackById" class="contestant-row">
+      <div class="contestant-row__info" *ngIf="editingId !== c.id">
+        <span class="contestant-row__name">{{ c.stageName }}</span>
+        <span class="qq-muted contestant-row__style">{{ c.style }}</span>
+        <span class="qq-muted contestant-row__notes">{{ c.notes }}</span>
+      </div>
+      <div class="contestant-row__edit" *ngIf="editingId === c.id">
+        <div class="form-grid">
+          <div class="form-field"><label class="qq-label">Stage Name</label><input class="qq-input" [(ngModel)]="draft.stageName"></div>
+          <div class="form-field"><label class="qq-label">Style</label><input class="qq-input" [(ngModel)]="draft.style"></div>
+        </div>
+        <div class="form-field"><label class="qq-label">Notes</label><textarea class="qq-input" [(ngModel)]="draft.notes" rows="2"></textarea></div>
+        <div class="form-actions">
+          <button mat-raised-button color="primary" (click)="save()">Save</button>
+          <button mat-button (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
+      <div class="contestant-row__actions">
+        <button mat-icon-button (click)="startEdit(c)" *ngIf="editingId !== c.id"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="del(c.id)"><mat-icon>delete</mat-icon></button>
+      </div>
+    </div>
+  </div>
+  <p class="qq-muted" *ngIf="!admin.contestants?.length">No contestants yet.</p>
+</div>

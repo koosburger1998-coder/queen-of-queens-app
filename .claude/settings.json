@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//x/Work/Github/queen-of-queens-judging-app/**)",
+      "Bash(Test-Path \"X:\\\\Work\\\\Github\\\\queen-of-queens-app\\\\README.md\")",
+      "Bash(npm audit *)",
+      "Bash(npm install *)"
+    ]
+  }
+}

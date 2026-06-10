@@ -1,0 +1,6 @@
+.admin-section__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; h2 { margin: 0; font-size: 1.4rem; } }
+.contestant-table { padding: 0; }
+.contestant-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); &:last-child { border-bottom: none; } &__info { flex: 1; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; } &__name { font-weight: 600; } &__style { font-size: 0.85rem; } &__notes { font-size: 0.8rem; } &__actions { display: flex; gap: 2px; } &__edit { flex: 1; } }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-actions { display: flex; gap: 10px; margin-top: 12px; }

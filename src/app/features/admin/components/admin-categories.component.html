@@ -1,0 +1,79 @@
+<div class="admin-section" *ngIf="admin$ | async as admin">
+  <h2>Categories</h2>
+
+  <div class="cat-panel">
+    <div class="cat-panel__head">
+      <h3>Judge Categories</h3>
+      <button mat-stroked-button (click)="startCreate('judge')" *ngIf="!creating || creatingType !== 'judge'">
+        <mat-icon>add</mat-icon> Add
+      </button>
+    </div>
+    <div class="qq-card" *ngIf="creating && creatingType === 'judge'">
+      <div class="form-grid">
+        <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="draft.name" placeholder="Category name"></div>
+        <div class="form-field"><label class="qq-label">Order</label><input class="qq-input" type="number" [(ngModel)]="draft.order"></div>
+      </div>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" (click)="save()">Create</button>
+        <button mat-button (click)="cancelEdit()">Cancel</button>
+      </div>
+    </div>
+    <div class="qq-card cat-list" *ngIf="admin.categories?.length">
+      <div *ngFor="let cat of admin.categories; trackBy: trackById" class="cat-row">
+        <ng-container *ngIf="editingId !== cat.id || editingType !== 'judge'">
+          <span class="cat-row__order">#{{ cat.order }}</span>
+          <span class="cat-row__name">{{ cat.name }}</span>
+          <div class="cat-row__actions">
+            <button mat-icon-button (click)="startEdit(cat, 'judge')"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="del(cat.id, 'judge')"><mat-icon>delete</mat-icon></button>
+          </div>
+        </ng-container>
+        <div class="cat-row__edit" *ngIf="editingId === cat.id && editingType === 'judge'">
+          <div class="form-grid">
+            <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="draft.name"></div>
+            <div class="form-field"><label class="qq-label">Order</label><input class="qq-input" type="number" [(ngModel)]="draft.order"></div>
+          </div>
+          <div class="form-actions"><button mat-raised-button color="primary" (click)="save()">Save</button><button mat-button (click)="cancelEdit()">Cancel</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cat-panel">
+    <div class="cat-panel__head">
+      <h3>Guest (Audience) Categories</h3>
+      <button mat-stroked-button (click)="startCreate('guest')" *ngIf="!creating || creatingType !== 'guest'">
+        <mat-icon>add</mat-icon> Add
+      </button>
+    </div>
+    <div class="qq-card" *ngIf="creating && creatingType === 'guest'">
+      <div class="form-grid">
+        <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="draft.name" placeholder="Category name"></div>
+        <div class="form-field"><label class="qq-label">Order</label><input class="qq-input" type="number" [(ngModel)]="draft.order"></div>
+      </div>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" (click)="save()">Create</button>
+        <button mat-button (click)="cancelEdit()">Cancel</button>
+      </div>
+    </div>
+    <div class="qq-card cat-list" *ngIf="admin.guestCategories?.length">
+      <div *ngFor="let cat of admin.guestCategories; trackBy: trackById" class="cat-row">
+        <ng-container *ngIf="editingId !== cat.id || editingType !== 'guest'">
+          <span class="cat-row__order">#{{ cat.order }}</span>
+          <span class="cat-row__name">{{ cat.name }}</span>
+          <div class="cat-row__actions">
+            <button mat-icon-button (click)="startEdit(cat, 'guest')"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="del(cat.id, 'guest')"><mat-icon>delete</mat-icon></button>
+          </div>
+        </ng-container>
+        <div class="cat-row__edit" *ngIf="editingId === cat.id && editingType === 'guest'">
+          <div class="form-grid">
+            <div class="form-field"><label class="qq-label">Name</label><input class="qq-input" [(ngModel)]="draft.name"></div>
+            <div class="form-field"><label class="qq-label">Order</label><input class="qq-input" type="number" [(ngModel)]="draft.order"></div>
+          </div>
+          <div class="form-actions"><button mat-raised-button color="primary" (click)="save()">Save</button><button mat-button (click)="cancelEdit()">Cancel</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

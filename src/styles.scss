@@ -1,0 +1,153 @@
+@use '@angular/material' as mat;
+
+// ─── Material theme ──────────────────────────────────────────────────────────
+$qq-pink-palette: (
+  50: #ffe0f0, 100: #ffb3d9, 200: #ff80bf, 300: #ff4da6, 400: #ff2694,
+  500: #ff1f8f, 600: #e8007a, 700: #cc0068, 800: #b00057, 900: #8c0041,
+  A100: #ff80bf, A200: #ff1f8f, A400: #e8007a, A700: #cc0068,
+  contrast: (50: #000, 100: #000, 200: #000, 300: #000, 400: #fff, 500: #fff, 600: #fff, 700: #fff, 800: #fff, 900: #fff)
+);
+
+$qq-purple-palette: (
+  50: #ede9fe, 100: #ddd6fe, 200: #c4b5fd, 300: #a78bfa, 400: #8b5cf6,
+  500: #7c3aed, 600: #6d28d9, 700: #5b21b6, 800: #4c1d95, 900: #3b0764,
+  A100: #a78bfa, A200: #8b5cf6, A400: #7c3aed, A700: #5b21b6,
+  contrast: (50: #000, 100: #000, 200: #000, 300: #000, 400: #fff, 500: #fff, 600: #fff, 700: #fff, 800: #fff, 900: #fff)
+);
+
+$qq-primary: mat.define-palette($qq-pink-palette, 500, 300, 700);
+$qq-accent:  mat.define-palette($qq-purple-palette, 400, 200, 600);
+$qq-warn:    mat.define-palette(mat.$red-palette);
+
+$qq-theme: mat.define-dark-theme((
+  color: (primary: $qq-primary, accent: $qq-accent, warn: $qq-warn),
+  typography: mat.define-typography-config($font-family: 'Inter, sans-serif'),
+  density: 0,
+));
+
+@include mat.all-component-themes($qq-theme);
+
+// ─── Design tokens ───────────────────────────────────────────────────────────
+:root {
+  --qq-pink:   #ff1f8f;
+  --qq-purple: #8b5cf6;
+  --qq-gold:   #ffd166;
+  --qq-green:  #31d0aa;
+  --qq-bg:     #0f0a1e;
+  --qq-card-bg: rgba(255, 255, 255, 0.05);
+  --qq-border: rgba(255, 255, 255, 0.1);
+  --qq-radius: 16px;
+}
+
+// ─── Reset / base ────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%; margin: 0; padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--qq-bg);
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ─── Global utility classes ──────────────────────────────────────────────────
+.qq-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 20% 50%, rgba(255,31,143,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.12) 0%, transparent 60%),
+              linear-gradient(135deg, #0f0a1e 0%, #1a0a2e 50%, #0f0a1e 100%);
+}
+
+.qq-stars {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 90%, rgba(255,255,255,0.4) 0%, transparent 100%);
+}
+
+.qq-card {
+  background: var(--qq-card-bg);
+  border: 1px solid var(--qq-border);
+  border-radius: var(--qq-radius);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.qq-badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 10px; border-radius: 100px;
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.8);
+
+  &--gold   { background: rgba(255,209,102,0.15); border-color: rgba(255,209,102,0.3); color: var(--qq-gold); }
+  &--green  { background: rgba(49,208,170,0.15);  border-color: rgba(49,208,170,0.3);  color: var(--qq-green); }
+  &--purple { background: rgba(139,92,246,0.15);  border-color: rgba(139,92,246,0.3);  color: var(--qq-purple); }
+  &--red    { background: rgba(239,68,68,0.15);   border-color: rgba(239,68,68,0.3);   color: #f87171; }
+  &--pink   { background: rgba(255,31,143,0.15);  border-color: rgba(255,31,143,0.3);  color: var(--qq-pink); }
+}
+
+.qq-input {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: rgba(255,255,255,0.3); }
+  &:focus { border-color: var(--qq-pink); box-shadow: 0 0 0 2px rgba(255,31,143,0.15); }
+}
+
+textarea.qq-input { resize: vertical; }
+
+.qq-label { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.6); letter-spacing: 0.04em; text-transform: uppercase; }
+
+.qq-btn-block {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; font-size: 0.95rem; font-weight: 700;
+}
+
+.qq-error {
+  color: #f87171; font-size: 0.875rem;
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 8px; padding: 8px 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.qq-muted { color: rgba(255,255,255,0.5); font-size: 0.875rem; }
+.qq-small { font-size: 0.8rem; }
+
+.qq-progressbar {
+  height: 5px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden;
+  &__fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--qq-pink), var(--qq-purple)); transition: width 0.3s ease; }
+}
+
+// ─── Material overrides ──────────────────────────────────────────────────────
+.mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(135deg, var(--qq-pink), var(--qq-purple)) !important;
+  color: #fff !important;
+}
+
+.mat-mdc-icon-button { color: rgba(255,255,255,0.6) !important; }
+.mat-mdc-icon-button:hover { color: #fff !important; }
+
+.mdc-text-field { background: transparent !important; }
+
+// ─── ngVar structural directive support ──────────────────────────────────────
+// ngVar is used in templates; no styles needed, just a placeholder comment.
+
+// ─── Scrollbar ───────────────────────────────────────────────────────────────
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,31,143,0.3); border-radius: 3px; }

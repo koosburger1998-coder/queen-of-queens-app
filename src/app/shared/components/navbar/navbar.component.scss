@@ -1,0 +1,25 @@
+.qq-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: rgba(5,3,8,.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  &__logo {
+    height: 36px;
+    width: auto;
+    display: block;
+  }
+
+  &__links {
+    display: flex;
+    gap: 4px;
+    a { color: rgba(255,255,255,.72); font-weight: 700; text-decoration: none; border-radius: 10px; }
+    a.active, a:hover { color: #fff; background: rgba(255,31,143,.15); }
+  }
+}
