@@ -1,7 +1,5 @@
-name: Build & Deploy
+name: "Build and Deploy"
 
-# Runs on every push to main.
-# Pull requests to main run the build job only (no deploy).
 on:
   push:
     branches: [main]
@@ -9,14 +7,11 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
 
 jobs:
-  # ─────────────────────────────────────────────
-  # JOB 1: Build & type-check both apps
-  # ─────────────────────────────────────────────
   build:
-    name: Build & type-check
+    name: "Build frontend and backend"
     runs-on: ubuntu-latest
 
     steps:
@@ -27,56 +22,45 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'                          # caches ~/.npm using package-lock.json
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
 
-      # Cache the backend npm cache separately since it has its own lock file
-      - name: Cache backend node_modules
-        uses: actions/cache@v4
-        with:
-          path: backend/node_modules
-          key: backend-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
-          restore-keys: backend-${{ runner.os }}-
-
-      - name: Install frontend dependencies
+      - name: Install root dependencies
         run: npm ci
 
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
 
-      # prisma generate reads schema.prisma and outputs the TS client.
-      # It does not connect to a database, but the env var must be present.
       - name: Generate Prisma client
         working-directory: backend
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
         run: npx prisma generate
 
-      # Angular production build — fails on any type error or template error
-      - name: Build Angular (production)
+      - name: Build Angular production
         run: npm run build:prod
 
-      # NestJS build — fails on any TypeScript error
-      - name: Build NestJS
+      - name: Build NestJS backend
         working-directory: backend
         run: npm run build
 
-  # ─────────────────────────────────────────────
-  # JOB 2: Trigger Render deploy (main only)
-  # ─────────────────────────────────────────────
   deploy:
-    name: Deploy to Render
-    needs: build                               # only runs if the build job passes
+    name: "Deploy to Render"
+    needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      # Calls the Render deploy hook — Render starts a new build immediately.
-      # Add RENDER_DEPLOY_HOOK_URL to your repo secrets:
-      #   GitHub repo → Settings → Secrets and variables → Actions → New secret
-      # Get the hook URL from:
-      #   Render dashboard → your Web Service → Settings → Deploy Hook
       - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
-          curl --fail --silent --show-error -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL secret is not configured."
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST "$RENDER_DEPLOY_HOOK_URL"
           echo "Deploy triggered successfully."
